@@ -101,6 +101,14 @@
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
+
+  /* Table cards grid print layout */
+  #table-cards-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 90mm) !important;
+    gap: 6mm !important;
+    justify-content: center !important;
+  }
 }
 
 /* Base custom utilities */
