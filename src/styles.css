@@ -86,7 +86,7 @@
 @media print {
   @page {
     size: A4 portrait;
-    margin: 10mm;
+    margin: 0;
   }
   .no-print {
     display: none !important;
@@ -109,7 +109,7 @@
   /* Table cards grid print layout */
   #table-cards-grid {
     display: grid !important;
-    grid-template-columns: repeat(2, 98mm) !important;
+    grid-template-columns: repeat(2, 102mm) !important;
     gap: 6mm !important;
     justify-content: center !important;
   }

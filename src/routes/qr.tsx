@@ -51,7 +51,7 @@ function TableCard({ tableNum, dataUrl }: { tableNum: number; dataUrl: string })
     <div
       className="print-container"
       style={{
-        width: "98mm",
+        width: "102mm",
         height: "68mm",
         boxSizing: "border-box",
         borderRadius: "7mm",
@@ -344,7 +344,7 @@ function QrPage() {
               id="table-cards-grid"
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(2, 98mm)",
+                gridTemplateColumns: "repeat(2, 102mm)",
                 gap: "6mm",
                 justifyContent: "center",
               }}
