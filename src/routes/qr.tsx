@@ -35,10 +35,10 @@ interface FormatConfig {
 }
 
 const formats: FormatConfig[] = [
-  { id: "a4", label: "A4 Poster (Wall / Counter Display)", w: "210mm", h: "297mm", qrSize: 180, scale: 1.15, layout: "vertical" },
-  { id: "tent", label: "Table Tent (A6 Stand)", w: "105mm", h: "148mm", qrSize: 90, scale: 0.72, layout: "vertical" },
-  { id: "card", label: "Table Card (Landscape)", w: "120mm", h: "80mm", qrSize: 76, scale: 0.72, layout: "horizontal" },
-  { id: "sticker", label: "Coaster / Sticker (Circle)", w: "90mm", h: "90mm", qrSize: 64, scale: 0.65, layout: "circle" },
+  { id: "a4", label: "A4 Poster (Wall / Counter Display)", w: "210mm", h: "297mm", qrSize: 220, scale: 1.2, layout: "vertical" },
+  { id: "tent", label: "Table Tent (A6 Stand)", w: "105mm", h: "148mm", qrSize: 110, scale: 0.78, layout: "vertical" },
+  { id: "card", label: "Table Card (Landscape)", w: "120mm", h: "80mm", qrSize: 84, scale: 0.78, layout: "horizontal" },
+  { id: "sticker", label: "Coaster / Sticker (Circle)", w: "90mm", h: "90mm", qrSize: 72, scale: 0.7, layout: "circle" },
 ];
 
 function QrPage() {
@@ -101,8 +101,8 @@ function QrPage() {
               <div
                 className={`art-deco-card print-container relative overflow-hidden flex ${
                   f.layout === "horizontal"
-                    ? "flex-row items-center justify-around px-4"
-                    : "flex-col items-center justify-between py-8 px-4"
+                    ? "flex-row items-center justify-center gap-6 px-4"
+                    : "flex-col items-center justify-center gap-6 py-8 px-4"
                 } ${
                   f.layout === "circle" ? "rounded-full" : "rounded-[2px]"
                 } shadow-[0_25px_60px_rgba(0,0,0,0.85)] print:shadow-none`}
@@ -133,7 +133,7 @@ function QrPage() {
                   style={{ transform: `scale(${f.scale})`, transformOrigin: "center" }}
                 >
                   <div className="mb-2 flex items-center justify-center">
-                    <img src="/logo.png" alt="D'ouro logo" className="h-14 object-contain" />
+                    <img src="/logo.png" alt="D'ouro logo" className="h-20 object-contain" />
                   </div>
 
                   <p className="text-[0.55rem] font-semibold uppercase tracking-[0.22em] text-[#c5a870]/90">

@@ -129,12 +129,14 @@ export function VisitFooter() {
                   </div>
 
                   {/* Hidden Entry Area: Subtle copyright link for Admin entrance */}
-                  <div className="flex items-center gap-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground/30">
+                  <div className="flex items-center gap-4 text-xs font-semibold uppercase tracking-wider">
                     <Link
                       to="/admin"
-                      className="transition-colors hover:text-primary/40 hover:underline"
+                      className="opacity-0 select-none pointer-events-auto w-8 h-8 block"
+                      aria-hidden="true"
+                      tabIndex={-1}
                     >
-                      Staff
+                      &nbsp;
                     </Link>
                   </div>
                 </div>
