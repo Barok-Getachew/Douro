@@ -41,15 +41,18 @@ const formats: FormatConfig[] = [
 ];
 
 const TABLE_COUNT = 15;
+const WIFI_SSID = "d'ouro Soul Food";
+const WIFI_PASSWORD = "douroSoulFoodStaff";
+const WIFI_QR_STRING = `WIFI:T:WPA;S:${WIFI_SSID};P:${WIFI_PASSWORD};;`;
 
-/** Premium split-panel table card — QR left | number right */
+/** Premium 2-panel table card — Menu QR | Table Number */
 function TableCard({ tableNum, dataUrl }: { tableNum: number; dataUrl: string }) {
   return (
     <div
       className="print-container"
       style={{
-        width: "90mm",
-        height: "64mm",
+        width: "105mm",
+        height: "68mm",
         boxSizing: "border-box",
         borderRadius: "7mm",
         background: "linear-gradient(135deg, #141008 0%, #1e1710 60%, #0e0b05 100%)",
@@ -59,49 +62,89 @@ function TableCard({ tableNum, dataUrl }: { tableNum: number; dataUrl: string })
         boxShadow: "0 16px 48px rgba(0,0,0,0.8), inset 0 1px 0 rgba(197,168,112,0.12)",
       }}
     >
-      {/* ── LEFT: QR section ── */}
-      <div
-        style={{
-          flex: "0 0 58%",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "4mm",
-        }}
-      >
-        {/* spacer at top to push QR + label down */}
-        <div style={{ height: "14mm" }} />
+      {/* ── LEFT: Menu QR ── */}
+      <div style={{ flex: "0 0 58%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between", padding: "4mm" }}>
+        <div style={{ height: "10mm" }} />
         {dataUrl && (
-          <div style={{ background: "#fff", borderRadius: "3.5mm", padding: "2.5mm", boxShadow: "0 2px 12px rgba(0,0,0,0.4)", marginTop: "3mm", marginBottom: "7mm" }}>
-            <img src={dataUrl} alt={`QR Table ${tableNum}`} style={{ width: "32mm", height: "32mm", display: "block" }} />
+          <div style={{ background: "#fff", borderRadius: "3.5mm", padding: "2.5mm", boxShadow: "0 2px 12px rgba(0,0,0,0.4)", marginBottom: "6mm" }}>
+            <img src={dataUrl} alt={`QR Table ${tableNum}`} style={{ width: "30mm", height: "30mm", display: "block" }} />
           </div>
         )}
-        <p style={{ margin: 0, fontSize: "0.65rem", fontWeight: 900, letterSpacing: "0.2em", textTransform: "uppercase", color: "#c5a870" }}>
+        <p style={{ margin: 0, fontSize: "0.62rem", fontWeight: 900, letterSpacing: "0.2em", textTransform: "uppercase", color: "#c5a870" }}>
           Scan for Menu
         </p>
       </div>
 
-      {/* ── DIVIDER ── */}
+      {/* Divider */}
       <div style={{ width: "0.3mm", background: "linear-gradient(to bottom, transparent 8%, #c5a870 30%, #c5a870 70%, transparent 92%)", opacity: 0.45, flexShrink: 0, alignSelf: "stretch" }} />
 
-      {/* ── RIGHT: Table number section ── */}
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "4mm",
-        }}
-      >
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2mm" }}>
-          <span style={{ fontSize: "4.2rem", fontFamily: "Georgia, 'Times New Roman', serif", fontWeight: 700, color: "#ffffff", lineHeight: 1, letterSpacing: "-0.02em" }}>
-            {tableNum}
+      {/* ── RIGHT: Table Number + Logo ── */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "4mm", gap: "2mm" }}>
+        <span style={{ fontSize: "4rem", fontFamily: "Georgia, 'Times New Roman', serif", fontWeight: 700, color: "#ffffff", lineHeight: 1, letterSpacing: "-0.02em" }}>
+          {tableNum}
+        </span>
+        <img src="/logo.png" alt="D'ouro" style={{ height: "18mm", objectFit: "contain", opacity: 0.9 }} />
+      </div>
+    </div>
+  );
+}
+
+/** Standalone WiFi QR card */
+function WifiCard({ wifiUrl }: { wifiUrl: string }) {
+  return (
+    <div
+      className="print-container"
+      style={{
+        width: "105mm",
+        height: "68mm",
+        boxSizing: "border-box",
+        borderRadius: "7mm",
+        background: "linear-gradient(135deg, #141008 0%, #1e1710 60%, #0e0b05 100%)",
+        display: "flex",
+        flexDirection: "row",
+        overflow: "hidden",
+        boxShadow: "0 16px 48px rgba(0,0,0,0.8), inset 0 1px 0 rgba(197,168,112,0.12)",
+      }}
+    >
+      {/* ── LEFT: WiFi QR ── */}
+      <div style={{ flex: "0 0 58%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between", padding: "4mm" }}>
+        <div style={{ height: "10mm" }} />
+        {wifiUrl && (
+          <div style={{ background: "#fff", borderRadius: "3.5mm", padding: "2.5mm", boxShadow: "0 2px 12px rgba(0,0,0,0.4)", marginBottom: "6mm" }}>
+            <img src={wifiUrl} alt="WiFi QR" style={{ width: "30mm", height: "30mm", display: "block" }} />
+          </div>
+        )}
+        <p style={{ margin: 0, fontSize: "0.62rem", fontWeight: 900, letterSpacing: "0.2em", textTransform: "uppercase", color: "#c5a870" }}>
+          Scan to Connect
+        </p>
+      </div>
+
+      {/* Divider */}
+      <div style={{ width: "0.3mm", background: "linear-gradient(to bottom, transparent 8%, #c5a870 30%, #c5a870 70%, transparent 92%)", opacity: 0.45, flexShrink: 0, alignSelf: "stretch" }} />
+
+      {/* ── RIGHT: Network Info ── */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "4mm 3mm", gap: "3mm" }}>
+        {/* WiFi icon */}
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#c5a870" strokeWidth="1.8">
+          <path d="M5 12.55a11 11 0 0 1 14.08 0" />
+          <path d="M1.42 9a16 16 0 0 1 21.16 0" />
+          <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
+          <circle cx="12" cy="20" r="1" fill="#c5a870" />
+        </svg>
+
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1.5mm", textAlign: "center" }}>
+          <span style={{ fontSize: "0.38rem", fontWeight: 700, letterSpacing: "0.28em", textTransform: "uppercase", color: "#c5a870", opacity: 0.6 }}>
+            Free Wi-Fi
           </span>
-          <img src="/logo.png" alt="D'ouro" style={{ height: "22mm", objectFit: "contain", opacity: 0.9 }} />
+          <span style={{ fontSize: "0.62rem", fontWeight: 800, color: "#ffffff", lineHeight: 1.2 }}>
+            {WIFI_SSID}
+          </span>
         </div>
+
+        {/* Thin gold divider */}
+        <div style={{ width: "70%", height: "0.3mm", background: "linear-gradient(to right, transparent, #c5a870 40%, #c5a870 60%, transparent)", opacity: 0.3 }} />
+
+        <img src="/logo.png" alt="D'ouro" style={{ height: "15mm", objectFit: "contain", opacity: 0.85 }} />
       </div>
     </div>
   );
@@ -209,6 +252,7 @@ function FormatCard({
 
 function QrPage() {
   const [dataUrl, setDataUrl] = useState("");
+  const [wifiUrl, setWifiUrl] = useState("");
   const [url, setUrl] = useState("");
   const [tab, setTab] = useState<"formats" | "tables">("tables");
 
@@ -221,6 +265,12 @@ function QrPage() {
       errorCorrectionLevel: "H",
       color: { dark: "#1a1108", light: "#ffffff" },
     }).then(setDataUrl);
+    QRCode.toDataURL(WIFI_QR_STRING, {
+      width: 600,
+      margin: 1,
+      errorCorrectionLevel: "H",
+      color: { dark: "#1a1108", light: "#ffffff" },
+    }).then(setWifiUrl);
   }, []);
 
   return (
@@ -294,7 +344,7 @@ function QrPage() {
               id="table-cards-grid"
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(3, 90mm)",
+                gridTemplateColumns: "repeat(3, 105mm)",
                 gap: "7mm",
                 justifyContent: "center",
               }}
@@ -302,6 +352,8 @@ function QrPage() {
               {Array.from({ length: TABLE_COUNT }, (_, i) => i + 1).map((n) => (
                 <TableCard key={n} tableNum={n} dataUrl={dataUrl} />
               ))}
+              {/* WiFi Card — 16th card */}
+              <WifiCard wifiUrl={wifiUrl} />
             </div>
           </div>
         )}

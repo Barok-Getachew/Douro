@@ -105,7 +105,7 @@
   /* Table cards grid print layout */
   #table-cards-grid {
     display: grid !important;
-    grid-template-columns: repeat(3, 90mm) !important;
+    grid-template-columns: repeat(3, 105mm) !important;
     gap: 6mm !important;
     justify-content: center !important;
   }
