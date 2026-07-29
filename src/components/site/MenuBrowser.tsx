@@ -19,7 +19,7 @@ function TagPill({ tag }: { tag: Tag }) {
   return (
     <span className="inline-flex items-center gap-1 rounded-full border border-primary/20 bg-primary/5 px-2.5 py-1 text-xs font-semibold text-primary transition-colors hover:bg-primary/10">
       {Icon && <Icon className="size-3" aria-hidden />}
-      {t(`tags.${tag}`)}
+      {t(tag)}
     </span>
   );
 }
@@ -106,22 +106,25 @@ export function MenuBrowser() {
 
         {/* Search & Categories Bar */}
         <Reveal delay={200}>
-          <div className="mt-12 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            {/* Search Input */}
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <div className="mt-12 space-y-4">
+            {/* Search Input — full width, polished */}
+            <div className="relative mx-auto max-w-xl">
+              <Search className="absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
               <input
                 type="search"
-                placeholder={t("searchPlaceholder")}
+                id="menu-search"
+                placeholder={t("search")}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                className="h-12 w-full rounded-full border border-primary/20 bg-background/50 pl-12 pr-6 text-sm text-foreground placeholder:text-muted-foreground transition-all focus:border-primary/60 focus:outline-none focus:ring-2 focus:ring-primary/10"
+                className="h-13 w-full rounded-full border border-primary/20 bg-background/60 pl-12 pr-6 text-sm text-foreground placeholder:text-muted-foreground shadow-sm backdrop-blur-sm transition-all focus:border-primary/60 focus:outline-none focus:ring-2 focus:ring-primary/10"
+                style={{ height: "3.25rem" }}
               />
             </div>
 
-            {/* Category selection selector */}
-            <div className="flex flex-wrap gap-2">
+            {/* Category Pills — centered scrollable row */}
+            <div className="flex flex-wrap justify-center gap-2">
               <button
+                id="cat-all"
                 onClick={() => setActive("all")}
                 className={`h-10 rounded-full px-5 text-sm font-semibold uppercase tracking-wider transition-all duration-300 ${
                   active === "all"
@@ -134,6 +137,7 @@ export function MenuBrowser() {
               {categories.map((cat) => (
                 <button
                   key={cat.id}
+                  id={`cat-${cat.id}`}
                   onClick={() => setActive(cat.id)}
                   className={`h-10 rounded-full px-5 text-sm font-semibold uppercase tracking-wider transition-all duration-300 ${
                     active === cat.id

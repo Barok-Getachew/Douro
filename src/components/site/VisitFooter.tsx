@@ -88,7 +88,7 @@ export function VisitFooter() {
               <iframe
                 title="Google Maps Location"
                 src={embedUrl}
-                className="w-full h-2/3 border-b border-primary/10 grayscale invert opacity-75 contrast-125"
+                className="w-full h-2/3 border-b border-primary/10"
                 allowFullScreen={false}
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"

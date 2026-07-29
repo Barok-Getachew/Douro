@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { LanguageProvider } from "@/lib/i18n";
 import { Hero } from "@/components/site/Hero";
-import { Story } from "@/components/site/Story";
 import { MenuBrowser } from "@/components/site/MenuBrowser";
 import { Reviews } from "@/components/site/Reviews";
 import { VisitFooter } from "@/components/site/VisitFooter";
@@ -65,7 +64,6 @@ function Index() {
       <MenuDataProvider data={data}>
         <main>
           <Hero />
-          <Story />
           <MenuBrowser />
           <Reviews />
           <VisitFooter />

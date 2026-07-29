@@ -11,6 +11,18 @@ type Dict = Record<string, Record<Lang, string>>;
 
 export const t_: Dict = {
   viewMenu: { en: "View Menu", de: "Zur Speisekarte", pt: "Ver Cardápio" },
+  seeMenu: { en: "See Menu", de: "Zur Speisekarte", pt: "Ver Cardápio" },
+  discoverMenu: { en: "Our Menu", de: "Unsere Speisekarte", pt: "Nosso Cardápio" },
+  menuSubtitle: { en: "Afro-Latin soul food, cooked fresh by hand in the heart of Salzburg.", de: "Afro-lateinamerikanisches Soul Food, täglich frisch per Hand in Salzburg zubereitet.", pt: "Soul food afro-latino, feito à mão, no coração de Salzburgo." },
+  allCategories: { en: "All", de: "Alle", pt: "Todos" },
+  noItemsFound: { en: "No dishes found.", de: "Keine Gerichte gefunden.", pt: "Nenhum prato encontrado." },
+  guestReviews: { en: "Guest Reviews", de: "Gästebewertungen", pt: "Avaliações" },
+  whatGuestsSay: { en: "What our guests say", de: "Was unsere Gäste sagen", pt: "O que dizem nossos clientes" },
+  reviewsCount: { en: "reviews", de: "Bewertungen", pt: "avaliações" },
+  visitUs: { en: "Visit Us", de: "Besuchen Sie uns", pt: "Visite-nos" },
+  openingHours: { en: "Opening Hours", de: "Öffnungszeiten", pt: "Horário de Funcionamento" },
+  salzburg: { en: "Salzburg, Austria", de: "Salzburg, Österreich", pt: "Salzburgo, Áustria" },
+  findUsNear: { en: "Find us near the city centre — easy to reach by foot or public transport.", de: "Wir befinden uns nahe der Altstadt — gut zu Fuß oder mit öffentlichen Verkehrsmitteln erreichbar.", pt: "Encontre-nos perto do centro — fácil de chegar a pé ou de transporte público." },
   scrollHint: { en: "Scroll to explore", de: "Scrollen zum Entdecken", pt: "Role para explorar" },
   storyKicker: { en: "Our Story", de: "Unsere Geschichte", pt: "Nossa História" },
   storyTitle: { en: "How D'ouro began", de: "Wie D'ouro begann", pt: "Como o D'ouro começou" },

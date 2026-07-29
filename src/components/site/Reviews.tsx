@@ -27,7 +27,7 @@ export function Reviews() {
                 ))}
               </div>
               <span className="text-sm text-muted-foreground">
-                ({t("reviewsCount", { count: restaurant.reviewCount })})
+                ({restaurant.reviewCount} {t("reviewsCount")})
               </span>
             </div>
           </div>
