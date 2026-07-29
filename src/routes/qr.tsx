@@ -51,7 +51,7 @@ function TableCard({ tableNum, dataUrl }: { tableNum: number; dataUrl: string })
     <div
       className="print-container"
       style={{
-        width: "105mm",
+        width: "92mm",
         height: "68mm",
         boxSizing: "border-box",
         borderRadius: "7mm",
@@ -144,7 +144,7 @@ function WifiCard({ wifiUrl }: { wifiUrl: string }) {
         {/* Thin gold divider */}
         <div style={{ width: "70%", height: "0.3mm", background: "linear-gradient(to right, transparent, #c5a870 40%, #c5a870 60%, transparent)", opacity: 0.3 }} />
 
-        <img src="/logo.png" alt="D'ouro" style={{ height: "15mm", objectFit: "contain", opacity: 0.85 }} />
+        <img src="/logo.png" alt="D'ouro" style={{ height: "20mm", objectFit: "contain", opacity: 0.85 }} />
       </div>
     </div>
   );
@@ -344,8 +344,8 @@ function QrPage() {
               id="table-cards-grid"
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(3, 105mm)",
-                gap: "7mm",
+                gridTemplateColumns: "repeat(2, 92mm)",
+                gap: "6mm",
                 justifyContent: "center",
               }}
             >
