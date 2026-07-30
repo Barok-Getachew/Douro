@@ -95,6 +95,8 @@
     background: transparent !important;
     background-color: white !important;
     color: black !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
   .print-container {
     page-break-inside: avoid;
