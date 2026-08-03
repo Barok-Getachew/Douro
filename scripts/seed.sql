@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS menu_items (
   allergens TEXT[] DEFAULT '{}',
   tags TEXT[] DEFAULT '{}',
   popular BOOLEAN DEFAULT FALSE,
+  available BOOLEAN DEFAULT TRUE,
   name_en TEXT NOT NULL DEFAULT '',
   name_de TEXT NOT NULL DEFAULT '',
   name_pt TEXT NOT NULL DEFAULT '',
