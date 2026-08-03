@@ -10,6 +10,7 @@ export interface MenuItem {
   allergens: string[];
   tags: Tag[];
   popular?: boolean;
+  available?: boolean;
   name: Record<Lang, string>;
   desc: Record<Lang, string>;
 }
@@ -672,6 +673,7 @@ export const restaurant = {
   whatsapp: "https://wa.me/436764231921",
   email: "info@douro-soulfood.com",
   maps: "https://www.google.com/maps/search/?api=1&query=Auerspergstra%C3%9Fe+10%2C+5020+Salzburg%2C+Austria",
+  googleReview: "https://search.google.com/local/writereview?placeid=ChIJ-3-y_Uvld0gRdfRkL6n3s2M",
   instagram: "https://www.instagram.com/douro_soulfood/",
   facebook: "https://www.facebook.com/people/Douro-Soulfood/61553206676357/",
   tripadvisor:

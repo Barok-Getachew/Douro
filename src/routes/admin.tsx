@@ -884,6 +884,27 @@ function MenuItemModal({
               />
             </button>
           </div>
+
+          {/* Available toggle */}
+          <div className="flex items-center justify-between rounded-xl border border-border p-4">
+            <div>
+              <p className="text-sm font-semibold text-foreground">Available</p>
+              <p className="text-xs text-muted-foreground">
+                {(form.available ?? true) ? "Showing on menu" : "Shown as Sold Out on menu"}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setForm((f) => ({ ...f, available: !(f.available ?? true) }))}
+              className={`relative h-6 w-11 rounded-full transition-colors ${(form.available ?? true) ? "bg-emerald-500" : "bg-destructive/70"}`}
+            >
+              <span
+                className={`absolute top-0.5 size-5 rounded-full bg-white shadow transition-transform ${
+                  (form.available ?? true) ? "translate-x-5" : "translate-x-0.5"
+                }`}
+              />
+            </button>
+          </div>
         </form>
 
         {/* Footer */}
@@ -1026,6 +1047,7 @@ function RestaurantTab({ token }: { token: string }) {
         {field("Instagram URL", "instagram")}
         {field("Facebook URL", "facebook")}
         {field("TripAdvisor URL", "tripadvisor")}
+        {field("Google Review URL", "googleReview")}
       </div>
 
       <div className="flex items-center gap-4">

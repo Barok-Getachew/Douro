@@ -51,6 +51,7 @@ function rowToMenuItem(row: Record<string, any>): MenuItem {
     allergens: (row.allergens as string[]) ?? [],
     tags: (row.tags as Tag[]) ?? [],
     popular: Boolean(row.popular),
+    available: row.available === null || row.available === undefined ? true : Boolean(row.available),
     name: { en: row.name_en, de: row.name_de, pt: row.name_pt },
     desc: { en: row.desc_en, de: row.desc_de, pt: row.desc_pt },
   };
@@ -72,6 +73,7 @@ function rowToRestaurant(row: Record<string, any>) {
     whatsapp: row.whatsapp ?? staticRestaurant.whatsapp,
     email: row.email ?? staticRestaurant.email,
     maps: row.maps ?? staticRestaurant.maps,
+    googleReview: row.google_review ?? staticRestaurant.googleReview,
     instagram: row.instagram ?? staticRestaurant.instagram,
     facebook: row.facebook ?? staticRestaurant.facebook,
     tripadvisor: row.tripadvisor ?? staticRestaurant.tripadvisor,
@@ -171,6 +173,7 @@ export const upsertMenuItemFn = createServerFn({ method: "POST" })
       allergens: item.allergens,
       tags: item.tags,
       popular: item.popular ?? false,
+      available: item.available ?? true,
       name_en: item.name.en,
       name_de: item.name.de,
       name_pt: item.name.pt,
@@ -218,6 +221,7 @@ export const updateRestaurantFn = createServerFn({ method: "POST" })
       whatsapp: r.whatsapp,
       email: r.email,
       maps: r.maps,
+      google_review: r.googleReview,
       instagram: r.instagram,
       facebook: r.facebook,
       tripadvisor: r.tripadvisor,
@@ -252,4 +256,32 @@ export const uploadMenuImageFn = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     const { data: urlData } = db.storage.from("menu-images").getPublicUrl(storagePath);
     return { url: urlData.publicUrl };
+  });
+
+// ─── Public review submission ─────────────────────────────────────────────────
+
+/** Submit a customer review. Saved to the reviews table with pending status. */
+export const submitReviewFn = createServerFn({ method: "POST" })
+  .validator(
+    (data: { author: string; rating: number; comment: string }) => data,
+  )
+  .handler(async ({ data }) => {
+    if (!isSupabaseConfigured()) {
+      // In dev/static mode just return success — no DB to write to
+      return { ok: true };
+    }
+    const db = getAdminDb();
+    const row = {
+      quote_en: data.comment,
+      quote_de: data.comment,
+      quote_pt: data.comment,
+      author: data.author,
+      source: "In-App",
+      rating: data.rating,
+      pending: true,
+      sort_order: 9999,
+    };
+    const { error } = await db.from("reviews").insert(row);
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });

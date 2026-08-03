@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS restaurant (
   tagline_en TEXT, tagline_de TEXT, tagline_pt TEXT,
   street TEXT, city TEXT,
   phone TEXT, phone_href TEXT, whatsapp TEXT, email TEXT,
-  maps TEXT, instagram TEXT, facebook TEXT, tripadvisor TEXT, order_url TEXT,
+  maps TEXT, google_review TEXT, instagram TEXT, facebook TEXT, tripadvisor TEXT, order_url TEXT,
   rating NUMERIC(3,1), review_count INTEGER,
   hours_en TEXT, hours_de TEXT, hours_pt TEXT
 );
@@ -37,6 +37,8 @@ CREATE TABLE IF NOT EXISTS reviews (
   id SERIAL PRIMARY KEY,
   quote_en TEXT, quote_de TEXT, quote_pt TEXT,
   author TEXT, source TEXT,
+  rating INTEGER DEFAULT 5,
+  pending BOOLEAN DEFAULT FALSE,
   sort_order INTEGER DEFAULT 0
 );
 
@@ -55,7 +57,7 @@ CREATE POLICY "Public read reviews"     ON reviews     FOR SELECT USING (true);
 
 -- 3. Restaurant
 INSERT INTO restaurant (id, name, tagline_en, tagline_de, tagline_pt, street, city,
-  phone, phone_href, whatsapp, email, maps, instagram, facebook, tripadvisor,
+  phone, phone_href, whatsapp, email, maps, google_review, instagram, facebook, tripadvisor,
   order_url, rating, review_count, hours_en, hours_de, hours_pt)
 VALUES (1,
   'D''ouro Soul Food',
@@ -64,6 +66,7 @@ VALUES (1,
   '+43 676 4231921', 'tel:+436764231921',
   'https://wa.me/436764231921', 'info@douro-soulfood.com',
   'https://www.google.com/maps/search/?api=1&query=Auerspergstra%C3%9Fe+10%2C+5020+Salzburg%2C+Austria',
+  'https://search.google.com/local/writereview?placeid=ChIJ-3-y_Uvld0gRdfRkL6n3s2M',
   'https://www.instagram.com/douro_soulfood/',
   'https://www.facebook.com/people/Douro-Soulfood/61553206676357/',
   'https://www.tripadvisor.com/Restaurant_Review-g190441-d25104877-Reviews-D_ouro_Soulfood_Bistro-Salzburg_Austrian_Alps.html',
@@ -365,3 +368,17 @@ INSERT INTO menu_items (id, category, price, image, allergens, tags, popular, na
 ON CONFLICT (id) DO NOTHING;
 
 -- Done! ✅
+
+-- ─── Migration: add review gating columns (safe to run on existing DB) ────────
+-- Run this if you already have a reviews table from an earlier seed:
+ALTER TABLE reviews ADD COLUMN IF NOT EXISTS rating INTEGER DEFAULT 5;
+ALTER TABLE reviews ADD COLUMN IF NOT EXISTS pending BOOLEAN DEFAULT FALSE;
+ALTER TABLE restaurant ADD COLUMN IF NOT EXISTS google_review TEXT;
+
+-- Also allow service role to INSERT into reviews (for in-app review submissions)
+DROP POLICY IF EXISTS "Service role write reviews" ON reviews;
+CREATE POLICY "Service role write reviews" ON reviews FOR INSERT WITH CHECK (true);
+
+-- ─── Migration: add availability column (safe to run on existing DB) ─────────
+-- Run this if you already have a menu_items table from an earlier seed:
+ALTER TABLE menu_items ADD COLUMN IF NOT EXISTS available BOOLEAN DEFAULT TRUE;

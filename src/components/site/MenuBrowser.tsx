@@ -25,10 +25,29 @@ function TagPill({ tag }: { tag: Tag }) {
 }
 
 function Dish({ item }: { item: MenuItem }) {
-  const { tr, lang } = useLang();
+  const { t, tr, lang } = useLang();
   const { allergenKey } = useMenuData();
+  const soldOut = item.available === false;
+
   return (
-    <article className="lux-card group flex gap-4 overflow-hidden rounded-xl p-3 transition-transform duration-500 hover:-translate-y-1 sm:p-4">
+    <article className={`lux-card group relative flex gap-4 overflow-hidden rounded-xl p-3 transition-transform duration-500 hover:-translate-y-1 sm:p-4 ${soldOut ? "opacity-70" : ""}`}>
+      {/* Sold-out banner */}
+      {soldOut && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+          <span
+            className="rotate-[-8deg] rounded-full px-5 py-1.5 text-xs font-black uppercase tracking-[0.2em] shadow-lg"
+            style={{
+              background: "oklch(0.22 0.015 62 / 0.92)",
+              border: "1.5px solid oklch(0.55 0.05 30 / 0.7)",
+              color: "oklch(0.72 0.06 50)",
+              backdropFilter: "blur(4px)",
+            }}
+          >
+            {t("soldOut")}
+          </span>
+        </div>
+      )}
+
       {item.image ? (
         <img
           src={item.image}
@@ -36,11 +55,11 @@ function Dish({ item }: { item: MenuItem }) {
           loading="lazy"
           width={160}
           height={160}
-          className="size-24 shrink-0 rounded-lg object-cover transition-transform duration-700 group-hover:scale-105 sm:size-28"
+          className={`size-24 shrink-0 rounded-lg object-cover transition-transform duration-700 group-hover:scale-105 sm:size-28 ${soldOut ? "grayscale" : ""}`}
         />
       ) : (
         <div
-          className="size-24 shrink-0 flex items-center justify-center rounded-lg border border-primary/15 sm:size-28 p-4 bg-white/5"
+          className={`size-24 shrink-0 flex items-center justify-center rounded-lg border border-primary/15 sm:size-28 p-4 bg-white/5 ${soldOut ? "grayscale" : ""}`}
           aria-hidden
         >
           <img src="/logo.png" alt="D'ouro logo" className="h-full object-contain" />
@@ -49,10 +68,10 @@ function Dish({ item }: { item: MenuItem }) {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex items-start justify-between gap-3">
-          <h3 className="font-display text-xl leading-tight text-foreground sm:text-2xl">
+          <h3 className={`font-display text-xl leading-tight sm:text-2xl ${soldOut ? "text-muted-foreground" : "text-foreground"}`}>
             {tr(item.name)}
           </h3>
-          <span className="shrink-0 font-display text-xl text-primary sm:text-2xl">
+          <span className={`shrink-0 font-display text-xl sm:text-2xl ${soldOut ? "text-muted-foreground line-through decoration-muted-foreground/60" : "text-primary"}`}>
             € {item.price.toFixed(2).replace(".", ",")}
           </span>
         </div>
