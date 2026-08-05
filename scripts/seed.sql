@@ -383,3 +383,20 @@ CREATE POLICY "Service role write reviews" ON reviews FOR INSERT WITH CHECK (tru
 -- ─── Migration: add availability column (safe to run on existing DB) ─────────
 -- Run this if you already have a menu_items table from an earlier seed:
 ALTER TABLE menu_items ADD COLUMN IF NOT EXISTS available BOOLEAN DEFAULT TRUE;
+
+-- ─── Migration: create storage bucket for images ─────────
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('menu-images', 'menu-images', true) 
+ON CONFLICT (id) DO NOTHING;
+
+DROP POLICY IF EXISTS "Public read menu images" ON storage.objects;
+CREATE POLICY "Public read menu images" ON storage.objects FOR SELECT USING (bucket_id = 'menu-images');
+
+DROP POLICY IF EXISTS "Service role write menu images" ON storage.objects;
+CREATE POLICY "Service role write menu images" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'menu-images');
+
+DROP POLICY IF EXISTS "Service role update menu images" ON storage.objects;
+CREATE POLICY "Service role update menu images" ON storage.objects FOR UPDATE USING (bucket_id = 'menu-images');
+
+DROP POLICY IF EXISTS "Service role delete menu images" ON storage.objects;
+CREATE POLICY "Service role delete menu images" ON storage.objects FOR DELETE USING (bucket_id = 'menu-images');
