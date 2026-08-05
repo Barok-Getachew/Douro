@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import QRCode from "qrcode";
-import { Printer, ArrowLeft, Layers, LayoutGrid } from "lucide-react";
+import { Printer, ArrowLeft, Layers, LayoutGrid, Download, FileImage, FileType2, ChevronDown } from "lucide-react";
 
 const title = "Printable QR Menu Cards — D'ouro Soul Food Salzburg";
 const description =
@@ -255,6 +255,8 @@ function QrPage() {
   const [wifiUrl, setWifiUrl] = useState("");
   const [url, setUrl] = useState("");
   const [tab, setTab] = useState<"formats" | "tables">("tables");
+  const [exportOpen, setExportOpen] = useState(false);
+  const exportRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const target = window.location.origin + "/";
@@ -273,6 +275,45 @@ function QrPage() {
     }).then(setWifiUrl);
   }, []);
 
+  // Close export dropdown on outside click
+  useEffect(() => {
+    if (!exportOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (exportRef.current && !exportRef.current.contains(e.target as Node)) setExportOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [exportOpen]);
+
+  /** Download the raw QR as PNG */
+  const downloadQrPng = () => {
+    if (!dataUrl) return;
+    const a = document.createElement("a");
+    a.href = dataUrl;
+    a.download = "douro-qr-code.png";
+    a.click();
+    setExportOpen(false);
+  };
+
+  /** Download the raw QR as SVG */
+  const downloadQrSvg = async () => {
+    if (!url) return;
+    const svg = await QRCode.toString(url, {
+      type: "svg",
+      margin: 2,
+      errorCorrectionLevel: "H",
+      color: { dark: "#1a1108", light: "#ffffff" },
+    });
+    const blob = new Blob([svg], { type: "image/svg+xml" });
+    const href = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = href;
+    a.download = "douro-qr-code.svg";
+    a.click();
+    URL.revokeObjectURL(href);
+    setExportOpen(false);
+  };
+
   return (
     <main className="min-h-dvh bg-[#0d0907] px-5 py-10 sm:px-8 text-foreground no-print-bg">
       <div className="mx-auto max-w-5xl">
@@ -285,14 +326,62 @@ function QrPage() {
           >
             <ArrowLeft className="size-4" aria-hidden /> Back to Menu
           </Link>
-          <button
-            onClick={() => window.print()}
-            className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full px-6 text-sm font-semibold uppercase tracking-[0.18em] text-primary-foreground shadow-[var(--shadow-gold)] transition-all duration-300 hover:scale-105 active:scale-95"
-            style={{ background: "var(--gradient-gold)" }}
-          >
-            <Printer className="size-4" aria-hidden />
-            {tab === "tables" ? "Print Table Cards" : "Print QR Papers"}
-          </button>
+
+          <div className="flex items-center gap-3">
+            {/* Export dropdown */}
+            <div ref={exportRef} className="relative">
+              <button
+                onClick={() => setExportOpen((v) => !v)}
+                className="inline-flex min-h-11 items-center gap-2 rounded-full border border-primary/30 bg-card/60 px-5 text-sm font-semibold text-foreground backdrop-blur transition-all hover:border-primary/60 hover:text-primary"
+              >
+                <Download className="size-4" />
+                Export QR
+                <ChevronDown className={`size-3.5 transition-transform ${exportOpen ? "rotate-180" : ""}`} />
+              </button>
+
+              {exportOpen && (
+                <div
+                  className="absolute right-0 top-full z-50 mt-2 w-60 overflow-hidden rounded-2xl border border-primary/20 shadow-[0_24px_60px_rgba(0,0,0,0.7)]"
+                  style={{ background: "linear-gradient(160deg, oklch(0.22 0.015 62), oklch(0.17 0.012 60))" }}
+                >
+                  <p className="border-b border-border px-4 py-2.5 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                    QR Code Only
+                  </p>
+                  {[
+                    { label: "Download PNG", sub: "Transparent · 600 px", Icon: FileImage, action: downloadQrPng },
+                    { label: "Download SVG", sub: "Scalable vector", Icon: FileType2, action: downloadQrSvg },
+                  ].map(({ label, sub, Icon, action }) => (
+                    <button
+                      key={label}
+                      onClick={action}
+                      className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-primary/10"
+                    >
+                      <div
+                        className="grid size-9 shrink-0 place-items-center rounded-lg border border-primary/20"
+                        style={{ background: "oklch(0.19 0.013 60)" }}
+                      >
+                        <Icon className="size-4 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-foreground">{label}</p>
+                        <p className="text-xs text-muted-foreground">{sub}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Print button */}
+            <button
+              onClick={() => window.print()}
+              className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full px-6 text-sm font-semibold uppercase tracking-[0.18em] text-primary-foreground shadow-[var(--shadow-gold)] transition-all duration-300 hover:scale-105 active:scale-95"
+              style={{ background: "var(--gradient-gold)" }}
+            >
+              <Printer className="size-4" aria-hidden />
+              {tab === "tables" ? "Print Table Cards" : "Print QR Papers"}
+            </button>
+          </div>
         </div>
 
         {/* Intro */}
@@ -362,11 +451,44 @@ function QrPage() {
         {tab === "formats" && (
           <div className="flex flex-col gap-16 items-center justify-center">
             {formats.map((f) => (
-              <figure key={f.id} className="w-full flex flex-col items-center">
-                <figcaption className="no-print mb-3 text-xs font-semibold uppercase tracking-[0.25em] text-muted-foreground/75">
+              <figure key={f.id} className="w-full flex flex-col items-center gap-4">
+                <figcaption className="no-print text-xs font-semibold uppercase tracking-[0.25em] text-muted-foreground/75">
                   {f.label} — <span className="font-mono">{f.w} × {f.h}</span>
                 </figcaption>
                 <FormatCard f={f} dataUrl={dataUrl} />
+                {/* Per-card download buttons */}
+                <div className="no-print flex gap-2">
+                  {[
+                    { label: "PNG", title: "Download PNG", action: () => {
+                      if (!dataUrl) return;
+                      const a = document.createElement("a");
+                      a.href = dataUrl;
+                      a.download = `douro-qr-${f.id}.png`;
+                      a.click();
+                    }},
+                    { label: "SVG", title: "Download SVG", action: async () => {
+                      const svg = await QRCode.toString(window.location.origin + "/", {
+                        type: "svg", margin: 2, errorCorrectionLevel: "H",
+                        color: { dark: "#1a1108", light: "#ffffff" },
+                      });
+                      const blob = new Blob([svg], { type: "image/svg+xml" });
+                      const href = URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = href; a.download = `douro-qr-${f.id}.svg`; a.click();
+                      URL.revokeObjectURL(href);
+                    }},
+                  ].map(({ label, title, action }) => (
+                    <button
+                      key={label}
+                      onClick={action}
+                      title={title}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-card/60 px-4 py-2 text-xs font-semibold text-muted-foreground backdrop-blur transition-all hover:border-primary/60 hover:text-primary"
+                    >
+                      <Download className="size-3" />
+                      {label}
+                    </button>
+                  ))}
+                </div>
               </figure>
             ))}
           </div>

@@ -1,6 +1,6 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import QRCode from "qrcode";
-import { Download } from "lucide-react";
+import { Download, FileImage, FileType2, Copy, ChevronDown, Check } from "lucide-react";
 
 interface QRGeneratorProps {
   url: string;
@@ -182,18 +182,107 @@ export function QRGenerator({ url, restaurantName, tagline }: QRGeneratorProps) 
     draw();
   }, [draw]);
 
-  const handleDownload = () => {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [menuOpen]);
+
+  /** Download the canvas as PNG */
+  const downloadPng = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     canvas.toBlob((blob) => {
       if (!blob) return;
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "douro-qr-card.png";
-      a.click();
-      URL.revokeObjectURL(a.href);
+      triggerDownload(URL.createObjectURL(blob), "douro-qr-card.png");
     }, "image/png");
+    setMenuOpen(false);
   };
+
+  /** Download the canvas as JPEG */
+  const downloadJpeg = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+      triggerDownload(URL.createObjectURL(blob), "douro-qr-card.jpg");
+    }, "image/jpeg", 0.95);
+    setMenuOpen(false);
+  };
+
+  /** Download a raw QR code as SVG (no branding, just the scannable code) */
+  const downloadSvg = async () => {
+    try {
+      const svgString = await QRCode.toString(url, {
+        type: "svg",
+        margin: 2,
+        errorCorrectionLevel: "H",
+        color: { dark: "#0c0806", light: "#ffffff" },
+      });
+      const blob = new Blob([svgString], { type: "image/svg+xml" });
+      triggerDownload(URL.createObjectURL(blob), "douro-qr-code.svg");
+    } catch (e) {
+      console.error("SVG export failed", e);
+    }
+    setMenuOpen(false);
+  };
+
+  /** Copy the QR image (PNG) to clipboard */
+  const copyToClipboard = async () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    try {
+      const blob = await new Promise<Blob | null>((res) => canvas.toBlob(res, "image/png"));
+      if (!blob) return;
+      await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (e) {
+      console.error("Copy failed", e);
+    }
+    setMenuOpen(false);
+  };
+
+  const exportOptions = [
+    {
+      id: "png",
+      label: "Download PNG",
+      sub: "Full branded card · lossless",
+      Icon: FileImage,
+      action: downloadPng,
+    },
+    {
+      id: "jpeg",
+      label: "Download JPEG",
+      sub: "Full branded card · compressed",
+      Icon: FileImage,
+      action: downloadJpeg,
+    },
+    {
+      id: "svg",
+      label: "Download SVG",
+      sub: "Raw QR code · scalable vector",
+      Icon: FileType2,
+      action: downloadSvg,
+    },
+    {
+      id: "copy",
+      label: copied ? "Copied!" : "Copy to Clipboard",
+      sub: "PNG · paste anywhere",
+      Icon: copied ? Check : Copy,
+      action: copyToClipboard,
+    },
+  ];
 
   return (
     <div className="flex flex-col items-center gap-8">
@@ -206,25 +295,65 @@ export function QRGenerator({ url, restaurantName, tagline }: QRGeneratorProps) 
         <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-primary/10 pointer-events-none" />
       </div>
 
-      <button
-        onClick={handleDownload}
-        id="download-qr-btn"
-        className="group relative inline-flex min-h-14 items-center gap-3 overflow-hidden rounded-full px-10 text-sm font-semibold uppercase tracking-[0.22em] text-primary-foreground transition-all duration-300 hover:scale-105 hover:shadow-[0_16px_48px_-8px_rgba(184,135,58,0.6)]"
-        style={{ background: "var(--gradient-gold)", boxShadow: "var(--shadow-gold)" }}
-      >
-        <Download className="size-5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-        Download QR Card (PNG)
-        <span className="absolute inset-0 -translate-x-full bg-white/10 transition-transform duration-500 group-hover:translate-x-full" />
-      </button>
+      {/* Export button + dropdown */}
+      <div ref={menuRef} className="relative">
+        <button
+          onClick={() => setMenuOpen((v) => !v)}
+          id="download-qr-btn"
+          className="group relative inline-flex min-h-14 items-center gap-3 overflow-hidden rounded-full px-10 text-sm font-semibold uppercase tracking-[0.22em] text-primary-foreground transition-all duration-300 hover:scale-105 hover:shadow-[0_16px_48px_-8px_rgba(184,135,58,0.6)]"
+          style={{ background: "var(--gradient-gold)", boxShadow: "var(--shadow-gold)" }}
+        >
+          <Download className="size-5 transition-transform duration-300 group-hover:-translate-y-0.5" />
+          Export QR Card
+          <ChevronDown className={`size-4 transition-transform duration-200 ${menuOpen ? "rotate-180" : ""}`} />
+          <span className="absolute inset-0 -translate-x-full bg-white/10 transition-transform duration-500 group-hover:translate-x-full" />
+        </button>
 
-      <p className="text-xs text-muted-foreground">
-        1200 × 800 px · print-ready · branded gold card
-      </p>
+        {/* Dropdown */}
+        {menuOpen && (
+          <div
+            className="absolute bottom-full left-1/2 mb-3 w-72 -translate-x-1/2 overflow-hidden rounded-2xl border border-primary/20 shadow-[0_24px_60px_rgba(0,0,0,0.7)]"
+            style={{ background: "linear-gradient(160deg, oklch(0.22 0.015 62), oklch(0.17 0.012 60))" }}
+          >
+            <p className="border-b border-border px-4 py-2.5 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+              Export Format
+            </p>
+            {exportOptions.map(({ id, label, sub, Icon, action }) => (
+              <button
+                key={id}
+                onClick={action}
+                className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-primary/10 hover:text-primary"
+              >
+                <div
+                  className="grid size-9 shrink-0 place-items-center rounded-lg border border-primary/20"
+                  style={{ background: "oklch(0.19 0.013 60)" }}
+                >
+                  <Icon className="size-4 text-primary" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-foreground">{label}</p>
+                  <p className="text-xs text-muted-foreground">{sub}</p>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <p className="text-xs text-muted-foreground">1200 × 800 px · print-ready · branded gold card</p>
     </div>
   );
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function triggerDownload(href: string, filename: string) {
+  const a = document.createElement("a");
+  a.href = href;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(href);
+}
 
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
