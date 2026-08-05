@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import QRCode from "qrcode";
+import * as htmlToImage from "html-to-image";
 import { Printer, ArrowLeft, Layers, LayoutGrid, Download, FileImage, FileType2, ChevronDown } from "lucide-react";
 
 const title = "Printable QR Menu Cards — D'ouro Soul Food Salzburg";
@@ -314,6 +315,22 @@ function QrPage() {
     setExportOpen(false);
   };
 
+  /** Download the full table cards grid */
+  const downloadTableCards = async () => {
+    const node = document.getElementById("table-cards-grid");
+    if (!node) return;
+    try {
+      const dataUrl = await htmlToImage.toPng(node, { quality: 1.0, pixelRatio: 2 });
+      const a = document.createElement("a");
+      a.href = dataUrl;
+      a.download = "douro-table-cards-grid.png";
+      a.click();
+    } catch (e) {
+      console.error("Failed to export grid", e);
+    }
+    setExportOpen(false);
+  };
+
   return (
     <main className="min-h-dvh bg-[#0d0907] px-5 py-10 sm:px-8 text-foreground no-print-bg">
       <div className="mx-auto max-w-5xl">
@@ -341,11 +358,30 @@ function QrPage() {
 
               {exportOpen && (
                 <div
-                  className="absolute right-0 top-full z-50 mt-2 w-60 overflow-hidden rounded-2xl border border-primary/20 shadow-[0_24px_60px_rgba(0,0,0,0.7)]"
+                  className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-2xl border border-primary/20 shadow-[0_24px_60px_rgba(0,0,0,0.7)]"
                   style={{ background: "linear-gradient(160deg, oklch(0.22 0.015 62), oklch(0.17 0.012 60))" }}
                 >
-                  <p className="border-b border-border px-4 py-2.5 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                    QR Code Only
+                  {tab === "tables" && (
+                    <>
+                      <p className="border-b border-border px-4 py-2.5 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                        Export Full Sheet
+                      </p>
+                      <button
+                        onClick={downloadTableCards}
+                        className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-primary/10"
+                      >
+                        <div className="grid size-9 shrink-0 place-items-center rounded-lg border border-primary/20" style={{ background: "oklch(0.19 0.013 60)" }}>
+                          <FileImage className="size-4 text-primary" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-foreground">Cards Grid (PNG)</p>
+                          <p className="text-xs text-muted-foreground">All 15 cards + WiFi</p>
+                        </div>
+                      </button>
+                    </>
+                  )}
+                  <p className="border-y border-border px-4 py-2.5 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                    Raw QR Code Only
                   </p>
                   {[
                     { label: "Download PNG", sub: "Transparent · 600 px", Icon: FileImage, action: downloadQrPng },
@@ -455,18 +491,33 @@ function QrPage() {
                 <figcaption className="no-print text-xs font-semibold uppercase tracking-[0.25em] text-muted-foreground/75">
                   {f.label} — <span className="font-mono">{f.w} × {f.h}</span>
                 </figcaption>
-                <FormatCard f={f} dataUrl={dataUrl} />
+                <div id={`format-card-${f.id}`}>
+                  <FormatCard f={f} dataUrl={dataUrl} />
+                </div>
                 {/* Per-card download buttons */}
                 <div className="no-print flex gap-2">
                   {[
-                    { label: "PNG", title: "Download PNG", action: () => {
+                    { label: "Download Full Card (PNG)", title: "Download the styled card", action: async () => {
+                      const node = document.getElementById(`format-card-${f.id}`);
+                      if (!node) return;
+                      try {
+                        const dataUrl = await htmlToImage.toPng(node, { quality: 1.0, pixelRatio: 2 });
+                        const a = document.createElement("a");
+                        a.href = dataUrl;
+                        a.download = `douro-card-${f.id}.png`;
+                        a.click();
+                      } catch (e) {
+                        console.error("Failed to export card", e);
+                      }
+                    }},
+                    { label: "Raw QR (PNG)", title: "Download just the raw QR code", action: () => {
                       if (!dataUrl) return;
                       const a = document.createElement("a");
                       a.href = dataUrl;
                       a.download = `douro-qr-${f.id}.png`;
                       a.click();
                     }},
-                    { label: "SVG", title: "Download SVG", action: async () => {
+                    { label: "Raw QR (SVG)", title: "Download just the raw QR code", action: async () => {
                       const svg = await QRCode.toString(window.location.origin + "/", {
                         type: "svg", margin: 2, errorCorrectionLevel: "H",
                         color: { dark: "#1a1108", light: "#ffffff" },
