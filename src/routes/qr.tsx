@@ -35,10 +35,10 @@ interface FormatConfig {
 }
 
 const formats: FormatConfig[] = [
-  { id: "a4", label: "A4 Poster (Wall / Counter Display)", w: "210mm", h: "297mm", qrSize: 220, scale: 1.2, layout: "vertical" },
-  { id: "tent", label: "Table Tent (A6 Stand)", w: "105mm", h: "148mm", qrSize: 110, scale: 0.78, layout: "vertical" },
-  { id: "card", label: "Table Card (Landscape)", w: "120mm", h: "80mm", qrSize: 84, scale: 0.78, layout: "horizontal" },
-  { id: "sticker", label: "Coaster / Sticker (Circle)", w: "90mm", h: "90mm", qrSize: 72, scale: 0.7, layout: "circle" },
+  { id: "a4", label: "A4 Poster (Wall / Counter Display)", w: "210mm", h: "297mm", qrSize: 340, scale: 1.0, layout: "vertical" },
+  { id: "tent", label: "Table Tent (A6 Stand)", w: "105mm", h: "148mm", qrSize: 200, scale: 0.78, layout: "vertical" },
+  { id: "card", label: "Table Card (Landscape)", w: "120mm", h: "80mm", qrSize: 160, scale: 0.78, layout: "horizontal" },
+  { id: "sticker", label: "Coaster / Sticker (Circle)", w: "90mm", h: "90mm", qrSize: 140, scale: 0.7, layout: "circle" },
 ];
 
 const TABLE_COUNT = 15;
@@ -52,8 +52,8 @@ function TableCard({ tableNum, dataUrl }: { tableNum: number; dataUrl: string })
     <div
       className="print-container"
       style={{
-        width: "102mm",
-        height: "68mm",
+        width: "130mm",
+        height: "80mm",
         boxSizing: "border-box",
         borderRadius: "7mm",
         background: "linear-gradient(135deg, #141008 0%, #1e1710 60%, #0e0b05 100%)",
@@ -68,7 +68,7 @@ function TableCard({ tableNum, dataUrl }: { tableNum: number; dataUrl: string })
         <div style={{ height: "10mm" }} />
         {dataUrl && (
           <div style={{ background: "#fff", borderRadius: "3.5mm", padding: "2.5mm", boxShadow: "0 2px 12px rgba(0,0,0,0.4)", marginBottom: "6mm" }}>
-            <img src={dataUrl} alt={`QR Table ${tableNum}`} style={{ width: "30mm", height: "30mm", display: "block" }} />
+            <img src={dataUrl} alt={`QR Table ${tableNum}`} style={{ width: "52mm", height: "52mm", display: "block" }} />
           </div>
         )}
         <p style={{ margin: 0, fontSize: "0.62rem", fontWeight: 900, letterSpacing: "0.2em", textTransform: "uppercase", color: "#c5a870" }}>
@@ -96,8 +96,8 @@ function WifiCard({ wifiUrl }: { wifiUrl: string }) {
     <div
       className="print-container"
       style={{
-        width: "105mm",
-        height: "68mm",
+        width: "130mm",
+        height: "80mm",
         boxSizing: "border-box",
         borderRadius: "7mm",
         background: "linear-gradient(135deg, #141008 0%, #1e1710 60%, #0e0b05 100%)",
@@ -112,7 +112,7 @@ function WifiCard({ wifiUrl }: { wifiUrl: string }) {
         <div style={{ height: "10mm" }} />
         {wifiUrl && (
           <div style={{ background: "#fff", borderRadius: "3.5mm", padding: "2.5mm", boxShadow: "0 2px 12px rgba(0,0,0,0.4)", marginBottom: "6mm" }}>
-            <img src={wifiUrl} alt="WiFi QR" style={{ width: "30mm", height: "30mm", display: "block" }} />
+            <img src={wifiUrl} alt="WiFi QR" style={{ width: "52mm", height: "52mm", display: "block" }} />
           </div>
         )}
         <p style={{ margin: 0, fontSize: "0.62rem", fontWeight: 900, letterSpacing: "0.2em", textTransform: "uppercase", color: "#c5a870" }}>
@@ -219,7 +219,6 @@ function FormatCard({
       <div
         className="relative z-10 flex flex-col items-center"
         style={{
-          transform: `scale(${f.scale})`,
           transformOrigin: "center",
           ...(isHorizontal ? { width: "50%", justifyContent: "center" } : {}),
         }}
@@ -469,7 +468,7 @@ function QrPage() {
               id="table-cards-grid"
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(2, 102mm)",
+                gridTemplateColumns: "repeat(2, 130mm)",
                 gap: "6mm",
                 justifyContent: "center",
               }}

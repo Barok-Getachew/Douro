@@ -1,5 +1,5 @@
 import { Star, Quote } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLang } from "@/lib/i18n";
 import { Reveal } from "./Reveal";
 import { useMenuData } from "@/lib/menu-context";
@@ -9,6 +9,15 @@ export function Reviews() {
   const { t, tr } = useLang();
   const { restaurant, reviews } = useMenuData();
   const [isReviewOpen, setIsReviewOpen] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("review") === "true") {
+        setIsReviewOpen(true);
+      }
+    }
+  }, []);
 
   return (
     <section id="reviews" className="px-5 py-20 sm:px-8">

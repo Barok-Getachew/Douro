@@ -85,8 +85,8 @@
 /* Print optimizations */
 @media print {
   @page {
-    size: A4 portrait;
-    margin: 0;
+    size: A4 landscape;
+    margin: 8mm;
   }
   .no-print {
     display: none !important;
@@ -111,11 +111,12 @@
   /* Table cards grid print layout */
   #table-cards-grid {
     display: grid !important;
-    grid-template-columns: repeat(2, 102mm) !important;
+    grid-template-columns: repeat(2, 130mm) !important;
     gap: 6mm !important;
     justify-content: center !important;
   }
 }
+
 
 /* Base custom utilities */
 .reveal {
